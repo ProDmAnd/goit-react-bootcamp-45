@@ -4,7 +4,6 @@ import { toast } from 'react-hot-toast';
 import { toast as toastify } from 'react-toastify';
 import { getNews } from 'services/api/newsApi';
 import NewsContentLoader from './NewsContentLoader';
-
 export default class News extends Component {
   state = {
     list: [],
@@ -101,6 +100,11 @@ export default class News extends Component {
             title="Search"
             onClick={this.fetchNewsByQuery}
           />
+          {Button({
+            type: 'button',
+            title: 'Search',
+            onClick: this.fetchNewsByQuery,
+          })}
         </div>
 
         <p>News</p>

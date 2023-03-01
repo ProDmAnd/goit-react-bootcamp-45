@@ -1,24 +1,10 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 
-export default class Button extends PureComponent {
-  componentDidMount() {
-    console.log('button is mounted');
-  }
+export default function Button({ onClick, title, ...restProps }) {
 
-  componentDidUpdate(prevProps) {
-    console.log('button did update', prevProps, this.props);
-  }
-
-  componentWillUnmount() {
-    console.log('button will unmount');
-  }
-
-  render() {
-    const { onClick, title, ...restProps } = this.props;
-    return (
-      <button onClick={this.props.onClick} {...restProps}>
-        {this.props.title}
-      </button>
-    );
-  }
+  return (
+    <button onClick={onClick} {...restProps}>
+      {title}
+    </button>
+  );
 }
