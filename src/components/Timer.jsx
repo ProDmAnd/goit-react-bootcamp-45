@@ -1,29 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import useInterval from 'hooks/useInterval';
+import { useKeyDown } from 'hooks/useKeyDown';
+import React, { useState } from 'react';
+import Button from './Button';
 
-const Timer = ({ runned = false, stopTimer = () => {} }) => {
+const Timer = () => {
+  const [timerRunned, setTimerRunned] = useState(false);
   const [timerValue, setTimerValue] = useState(0);
+  useKeyDown(true, () => setTimerRunned(false), 'Escape');
 
-  useEffect(() => {
-    console.log('useEffect runned');
-    if (!runned) return;
-    const keyListener = e => {
-      console.log('key pressed', e.code);
-      if (e.code === 'Escape') {
-        stopTimer();
-      }
-    };
-    document.addEventListener('keydown', keyListener);
-    const intervalId = setInterval(() => {
-      console.log('Interval works', new Date().toISOString());
-      setTimerValue(prev => prev + 1);
-    }, 1000);
-    return () => {
-      clearInterval(intervalId);
-      document.removeEventListener('keydown', keyListener);
-    };
-  }, [runned, stopTimer]);
+  useInterval(timerRunned, () => setTimerValue(prev => prev + 1));
 
-  return <p>Timer: {timerValue} seconds</p>;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <p>Timer: {timerValue} seconds</p>
+      <Button onClick={() => setTimerRunned(prev => !prev)}>
+        Run/Stop timer
+      </Button>
+    </div>
+  );
 };
 
 export default Timer;

@@ -1,3 +1,4 @@
+import Button from 'components/Button';
 import { Component } from 'react';
 import ErrorBoundary from '../ErrorBoundary';
 import Form from '../Form';
@@ -91,12 +92,12 @@ class Todos extends Component {
               </ErrorBoundary>
             </Modal>
           )}
-          <button
+          <Button
             type="button"
             onClick={() => this.setState({ modalVisible: true })}
           >
             Show Modal
-          </button>
+          </Button>
           <input value={this.state.search} onChange={this.onSearch} />
           <ErrorBoundary>
             <TodoList todos={filteredTodos} deleteTodo={this.deleteTodo} />

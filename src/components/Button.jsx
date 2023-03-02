@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { forwardRef, useRef } from 'react';
+import s from './Button.module.css';
 
-export default function Button({ onClick, title, ...restProps }) {
-
+const Button = ({ onClick, children, color, ...restProps }, ref) => {
   return (
-    <button onClick={onClick} {...restProps}>
-      {title}
+    <button
+      ref={ref}
+      onClick={onClick}
+      className={s.button}
+      style={{
+        borderRadius: 4,
+        backgroundColor: color,
+        padding: '8px 16px',
+        border: 'none',
+      }}
+      {...restProps}
+    >
+      {children}
     </button>
   );
-}
+};
+
+export default forwardRef(Button);
