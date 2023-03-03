@@ -1,4 +1,4 @@
-import { useKeyDown } from 'hooks/useKeyDown';
+import { useKeyDown, useListenerHook } from 'hooks/useKeyDown';
 import React, { Component } from 'react';
 import { createPortal } from 'react-dom';
 

@@ -3,15 +3,26 @@ import ControlledForm from 'components/ControlledForm/ControlledForm';
 import Modal from 'components/Modal';
 import useIsMount from 'hooks/useIsMount';
 import { useToggle } from 'hooks/useToggle';
-import React from 'react';
-import { useCallback } from 'react';
-import { useEffect } from 'react';
-import { useRef } from 'react';
-import { useMemo } from 'react';
-import { useState } from 'react';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { useAsyncFn } from 'react-use';
 import { getNews } from 'services/api/newsApi';
 import NewsList from './NewsList';
+
+let reactMachineMemory = {
+  0: { result: null, dependencyArray: [5] },
+};
+
+const useMemoCustom = (callback, dependencyArray = [6]) => {
+  const different = dependencyArray.some(
+    (elem, i) => reactMachineMemory[0].dependencyArray[i] !== elem
+  );
+  reactMachineMemory[0].dependencyArray = dependencyArray;
+  if (different) {
+    return callback();
+  }
+  return reactMachineMemory[0].result;
+};
 
 const NewsFunc = () => {
   const isMount = useIsMount();
@@ -24,65 +35,85 @@ const NewsFunc = () => {
   const [hitsPerPage, setHitsPerPage] = useState(150);
   const changeHitsPerPage = ({ target: { value } }) => {
     setHitsPerPage(Number(value));
+    // setIsLoading(true);
   };
 
-  const [list, setList] = useState([]);
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [{ value: list = [], error, loading: isLoading }, fetchNews] =
+    useAsyncFn(async ({ query = '', hitsPerPage }) => {
+      const response = await toast.promise(
+        getNews({
+          query,
+          hitsPerPage,
+        }),
+        {
+          success: response =>
+            response.hits.length ? 'News loaded' : 'Nothings found',
+          error: 'Nothings found',
+          loading: 'Fetching news',
+        }
+      );
+      return response.hits;
+    });
+
+  // const [list, setList] = useState([]);
+  // const [error, setError] = useState('');
+  // const [isLoading, setIsLoading] = useState(false);
 
   const [page, setPage] = useState(0);
-  const fetchNewsByQuery = useCallback(
-    async (params = { query: '', hitsPerPage: 10 }) => {
-      setIsLoading(true);
-      try {
-        const response = await toast.promise(
-          getNews({
-            query: params.query,
-            hitsPerPage: params.hitsPerPage,
-          }),
-          {
-            success: response =>
-              response.hits.length ? 'News loaded' : 'Nothings found',
-            error: 'Nothings found',
-            loading: 'Fetching news',
-          }
-        );
-        setPage(0);
-        setList(response.hits);
-      } catch (error) {
-        setError(error?.message);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
+  // const fetchNewsByQuery = useCallback(
+  //   async (params = { query: '', hitsPerPage: 10 }) => {
+  //     setIsLoading(true);
+  //     try {
+  //       const response = await toast.promise(
+  //         getNews({
+  //           query: params.query,
+  //           hitsPerPage: params.hitsPerPage,
+  //         }),
+  //         {
+  //           success: response =>
+  //             response.hits.length ? 'News loaded' : 'Nothings found',
+  //           error: 'Nothings found',
+  //           loading: 'Fetching news',
+  //         }
+  //       );
+  //       setPage(0);
+  //       setList(response.hits);
+  //     } catch (error) {
+  //       setError(error?.message);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   },
+  //   []
+  // );
 
-  // useEffect(() => {
-  //   fetchNewsByQuery({ hitsPerPage });
-  // }, [hitsPerPage, query, fetchNewsByQuery]);
+  const [counter, setCounter] = useState(0);
 
   useEffect(() => {
-    console.log('component did mount');
-    const intervalId = setInterval(() => {
-      setPage(Math.random());
-    }, 1000);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
+    debugger;
+    if (hitsPerPage > 50) return;
+    fetchNews({ hitsPerPage });
+  }, [hitsPerPage, fetchNews]);
 
   useEffect(() => {
     if (!isMount) return;
-    console.log('component did update');
-    if (!isLoading) {
-      incrementButtonRef.current.scrollIntoView({ behavior: 'smooth' });
+    console.log('News component did update');
+    if (!isLoading && list.length) {
+      incrementButtonRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'end',
+      });
     }
   }, [isLoading, list, isMount]);
 
   const registrationModal = useToggle(false);
 
-  const memoizedList = useMemo(() => list.filter(({ title }) => title), [list]);
+  /** @type {import('./NewsList').NewsItem[]} */
+  const memoizedList = useMemo(() => {
+    const filteredNews = list.filter(({ title }) => title);
+    filteredNews.sort((a, b) => a.title > b.title);
+    return filteredNews;
+  }, [list]);
 
   const loadMore = () => {
     setHitsPerPage(prev => prev + 10);
@@ -98,7 +129,7 @@ const NewsFunc = () => {
           value={query}
           onChange={changeQuery}
           onKeyDown={e =>
-            e.code === 'Enter' ? fetchNewsByQuery({ query, hitsPerPage }) : null
+            e.code === 'Enter' ? fetchNews({ query, hitsPerPage }) : null
           }
         />
         <select value={hitsPerPage} onChange={changeHitsPerPage}>
@@ -108,10 +139,7 @@ const NewsFunc = () => {
             </option>
           ))}
         </select>
-        <Button
-          type="button"
-          onClick={() => fetchNewsByQuery({ query, hitsPerPage })}
-        >
+        <Button type="button" onClick={() => fetchNews({ query, hitsPerPage })}>
           Search
         </Button>
       </div>
@@ -127,7 +155,7 @@ const NewsFunc = () => {
         {error && <p>{error}</p>}
         <NewsList
           isLoading={isLoading}
-          list={memoizedList}
+          list={[{ objectID: 'asdasd', title: 'My News', url: '123' }]}
           loadMore={loadMore}
           hitsPerPage={hitsPerPage}
         />
@@ -145,4 +173,4 @@ const NewsFunc = () => {
   );
 };
 
-export default NewsFunc;
+export default memo(NewsFunc);
