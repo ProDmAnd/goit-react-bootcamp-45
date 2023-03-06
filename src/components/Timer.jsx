@@ -1,7 +1,7 @@
 import useInterval from 'hooks/useInterval';
 import { useKeyDown } from 'hooks/useKeyDown';
 import React, { useState } from 'react';
-import Button from './Button';
+import Button from './Button/Button';
 
 const Timer = () => {
   const [timerRunned, setTimerRunned] = useState(false);

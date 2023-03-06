@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import css from './ControlledFrom.module.css';
 import { CITY_OPTIONS, GENDER_OPTIONS } from 'constants/loginForm';
-import Button from 'components/Button';
+import Button from 'components/Button/Button';
 import { PureComponent } from 'react';
 
 class ControlledForm extends PureComponent {

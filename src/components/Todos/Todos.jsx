@@ -1,5 +1,11 @@
-import Button from 'components/Button';
-import { Component } from 'react';
+import Button from 'components/Button/Button';
+import { useToggle } from 'hooks/useToggle';
+import { useCallback } from 'react';
+import { useMemo } from 'react';
+import { useEffect } from 'react';
+import { Component, useState } from 'react';
+import { Link, Outlet } from 'react-router-dom';
+import { getTodos } from 'services/api/todosApi';
 import ErrorBoundary from '../ErrorBoundary';
 import Form from '../Form';
 import Modal from '../Modal';
@@ -7,7 +13,7 @@ import TodoList from './TodoList';
 
 const todosStorageKey = 'todos';
 
-class Todos extends Component {
+class Todos1 extends Component {
   // static getDerivedStateFromProps(nextProps, prevState) {
   //   if (prevState.todos?.length > 10) {
   //     const copy = [...prevState.todos];
@@ -107,5 +113,60 @@ class Todos extends Component {
     );
   }
 }
+
+const Todos = () => {
+  const [todos, setTodos] = useState([]);
+  const [search, setSearch] = useState('');
+  const handleSearch = useCallback(
+    ({ target: { value } }) => setSearch(value),
+    []
+  );
+
+  const addTodoModal = useToggle();
+
+  const addTodo = () => {};
+
+  const deleteTodo = () => {};
+
+  const filteredTodos = useMemo(() => {
+    return todos.filter(({ title }) =>
+      title.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [todos, search]);
+
+  useEffect(() => {
+    getTodos().then(setTodos);
+  }, []);
+
+  return (
+    <>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: '#010101',
+          gap: 15,
+        }}
+      >
+        {addTodoModal.isOpen && (
+          <Modal onClose={addTodoModal.close}>
+            <ErrorBoundary>
+              <Form onSubmit={addTodo} />
+            </ErrorBoundary>
+          </Modal>
+        )}
+        <Button type="button" onClick={addTodoModal.open}>
+          Show Modal
+        </Button>
+        <input value={search} onChange={handleSearch} />
+        <ErrorBoundary>
+          <TodoList todos={filteredTodos} deleteTodo={deleteTodo} />
+        </ErrorBoundary>
+      </div>
+    </>
+  );
+};
 
 export default Todos;

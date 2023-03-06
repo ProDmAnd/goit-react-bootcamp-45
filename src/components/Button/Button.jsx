@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef } from 'react';
+import React, { forwardRef } from 'react';
 import s from './Button.module.css';
 
 const Button = ({ onClick, children, color, ...restProps }, ref) => {

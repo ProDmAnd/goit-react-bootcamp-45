@@ -1,13 +1,14 @@
-import Button from 'components/Button';
+import Button from 'components/Button/Button';
 import ControlledForm from 'components/ControlledForm/ControlledForm';
 import Modal from 'components/Modal';
 import useIsMount from 'hooks/useIsMount';
 import { useToggle } from 'hooks/useToggle';
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import { useAsyncFn } from 'react-use';
 import { getNews } from 'services/api/newsApi';
-import NewsList from './NewsList';
+import NewsList from 'components/News/NewsList';
 
 let reactMachineMemory = {
   0: { result: null, dependencyArray: [5] },
@@ -24,7 +25,7 @@ const useMemoCustom = (callback, dependencyArray = [6]) => {
   return reactMachineMemory[0].result;
 };
 
-const NewsFunc = () => {
+const News = () => {
   const isMount = useIsMount();
   const searchRef = useRef();
   /** @type {React.RefObject<HTMLButtonElement>} */
@@ -32,7 +33,7 @@ const NewsFunc = () => {
   const [query, setQuery] = useState('');
   const changeQuery = ({ target: { value } }) => setQuery(value);
 
-  const [hitsPerPage, setHitsPerPage] = useState(150);
+  const [hitsPerPage, setHitsPerPage] = useState(25);
   const changeHitsPerPage = ({ target: { value } }) => {
     setHitsPerPage(Number(value));
     // setIsLoading(true);
@@ -55,49 +56,17 @@ const NewsFunc = () => {
       return response.hits;
     });
 
-  // const [list, setList] = useState([]);
-  // const [error, setError] = useState('');
-  // const [isLoading, setIsLoading] = useState(false);
-
   const [page, setPage] = useState(0);
-  // const fetchNewsByQuery = useCallback(
-  //   async (params = { query: '', hitsPerPage: 10 }) => {
-  //     setIsLoading(true);
-  //     try {
-  //       const response = await toast.promise(
-  //         getNews({
-  //           query: params.query,
-  //           hitsPerPage: params.hitsPerPage,
-  //         }),
-  //         {
-  //           success: response =>
-  //             response.hits.length ? 'News loaded' : 'Nothings found',
-  //           error: 'Nothings found',
-  //           loading: 'Fetching news',
-  //         }
-  //       );
-  //       setPage(0);
-  //       setList(response.hits);
-  //     } catch (error) {
-  //       setError(error?.message);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   },
-  //   []
-  // );
 
   const [counter, setCounter] = useState(0);
 
   useEffect(() => {
-    debugger;
     if (hitsPerPage > 50) return;
     fetchNews({ hitsPerPage });
   }, [hitsPerPage, fetchNews]);
 
   useEffect(() => {
     if (!isMount) return;
-    console.log('News component did update');
     if (!isLoading && list.length) {
       incrementButtonRef.current.scrollIntoView({
         behavior: 'smooth',
@@ -118,6 +87,14 @@ const NewsFunc = () => {
   const loadMore = () => {
     setHitsPerPage(prev => prev + 10);
   };
+
+  useEffect(() => {
+    console.log('News Func did mount');
+
+    return () => {
+      console.log('News Func will unmount');
+    };
+  }, []);
 
   return (
     <div
@@ -155,7 +132,7 @@ const NewsFunc = () => {
         {error && <p>{error}</p>}
         <NewsList
           isLoading={isLoading}
-          list={[{ objectID: 'asdasd', title: 'My News', url: '123' }]}
+          list={list}
           loadMore={loadMore}
           hitsPerPage={hitsPerPage}
         />
@@ -173,4 +150,4 @@ const NewsFunc = () => {
   );
 };
 
-export default memo(NewsFunc);
+export default memo(News);
