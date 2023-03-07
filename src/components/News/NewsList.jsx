@@ -1,4 +1,3 @@
-import { pages } from 'App';
 import Button from 'components/Button/Button';
 import React from 'react';
 import NewsContentLoader from './NewsContentLoader';

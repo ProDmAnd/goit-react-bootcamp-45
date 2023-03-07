@@ -1,50 +1,42 @@
 import Button from 'components/Button/Button';
-import ControlledForm from 'components/ControlledForm/ControlledForm';
-import Modal from 'components/Modal';
+import NewsList from 'components/News/NewsList';
 import useIsMount from 'hooks/useIsMount';
 import { useToggle } from 'hooks/useToggle';
-import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useEffect, useMemo, useRef } from 'react';
 import { toast } from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useAsyncFn } from 'react-use';
 import { getNews } from 'services/api/newsApi';
-import NewsList from 'components/News/NewsList';
-
-let reactMachineMemory = {
-  0: { result: null, dependencyArray: [5] },
-};
-
-const useMemoCustom = (callback, dependencyArray = [6]) => {
-  const different = dependencyArray.some(
-    (elem, i) => reactMachineMemory[0].dependencyArray[i] !== elem
-  );
-  reactMachineMemory[0].dependencyArray = dependencyArray;
-  if (different) {
-    return callback();
-  }
-  return reactMachineMemory[0].result;
-};
 
 const News = () => {
   const isMount = useIsMount();
   const searchRef = useRef();
   /** @type {React.RefObject<HTMLButtonElement>} */
   const incrementButtonRef = useRef();
-  const [query, setQuery] = useState('');
-  const changeQuery = ({ target: { value } }) => setQuery(value);
 
-  const [hitsPerPage, setHitsPerPage] = useState(25);
+  const [searchParams, setSearchParams] = useSearchParams({
+    hitsPerPage: 10,
+    page: 1,
+    query: 'react',
+  });
+
+  const changeQuery = ({ target: { value } }) => {
+    searchParams.set('query', value);
+    setSearchParams(searchParams);
+  };
+
   const changeHitsPerPage = ({ target: { value } }) => {
-    setHitsPerPage(Number(value));
-    // setIsLoading(true);
+    searchParams.set('hitsPerPage', value);
+    setSearchParams(searchParams);
   };
 
   const [{ value: list = [], error, loading: isLoading }, fetchNews] =
-    useAsyncFn(async ({ query = '', hitsPerPage }) => {
+    useAsyncFn(async ({ query = '', hitsPerPage, page } = {}) => {
       const response = await toast.promise(
         getNews({
           query,
           hitsPerPage,
+          page,
         }),
         {
           success: response =>
@@ -56,14 +48,14 @@ const News = () => {
       return response.hits;
     });
 
-  const [page, setPage] = useState(0);
-
-  const [counter, setCounter] = useState(0);
+  const params = useMemo(() => {
+    return Object.fromEntries([...searchParams]);
+  }, [searchParams]);
 
   useEffect(() => {
-    if (hitsPerPage > 50) return;
-    fetchNews({ hitsPerPage });
-  }, [hitsPerPage, fetchNews]);
+    console.debug(params);
+    fetchNews(params);
+  }, [searchParams, params, fetchNews]);
 
   useEffect(() => {
     if (!isMount) return;
@@ -84,18 +76,6 @@ const News = () => {
     return filteredNews;
   }, [list]);
 
-  const loadMore = () => {
-    setHitsPerPage(prev => prev + 10);
-  };
-
-  useEffect(() => {
-    console.log('News Func did mount');
-
-    return () => {
-      console.log('News Func will unmount');
-    };
-  }, []);
-
   return (
     <div
       style={{ padding: 30, display: 'flex', flexDirection: 'column', gap: 20 }}
@@ -103,47 +83,53 @@ const News = () => {
       <div style={{ display: 'flex', gap: 20 }}>
         <input
           ref={searchRef}
-          value={query}
+          value={params.query}
           onChange={changeQuery}
-          onKeyDown={e =>
-            e.code === 'Enter' ? fetchNews({ query, hitsPerPage }) : null
-          }
+          onKeyDown={e => (e.code === 'Enter' ? fetchNews(params) : null)}
         />
-        <select value={hitsPerPage} onChange={changeHitsPerPage}>
+        <select value={params.hitsPerPage} onChange={changeHitsPerPage}>
           {[10, 25, 50, 100].map(count => (
             <option key={count} value={count}>
               {count}
             </option>
           ))}
         </select>
-        <Button type="button" onClick={() => fetchNews({ query, hitsPerPage })}>
+        <Button type="button" onClick={() => fetchNews(params)}>
           Search
         </Button>
       </div>
 
       <Button onClick={registrationModal.open}>Register</Button>
-      {registrationModal.isOpen && (
-        <Modal onClose={registrationModal.close}>
-          <ControlledForm list={memoizedList} />
-        </Modal>
-      )}
       <div>
         <p>News</p>
-        {error && <p>{error}</p>}
+        {error?.message && <p>{error.message}</p>}
         <NewsList
           isLoading={isLoading}
           list={list}
-          loadMore={loadMore}
-          hitsPerPage={hitsPerPage}
+          hitsPerPage={Number(params.hitsPerPage) || 10}
         />
       </div>
       <div>
-        Page: {page}
         <Button
           ref={incrementButtonRef}
-          onClick={() => setPage(prev => prev + 1)}
+          onClick={() => {
+            setSearchParams({
+              ...params,
+              page: Number(params.page) - 1,
+            });
+          }}
         >
-          Increment
+          -
+        </Button>
+        Page: {params.page}
+        <Button
+          ref={incrementButtonRef}
+          onClick={() => {
+            searchParams.set('page', Number(params.page) + 1);
+            setSearchParams(searchParams);
+          }}
+        >
+          +
         </Button>
       </div>
     </div>

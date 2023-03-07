@@ -1,29 +1,35 @@
-import React, { PureComponent } from 'react';
-import { Component } from 'react';
+import React, { Component } from 'react';
 
 export class Form extends Component {
-
   static propTypes = {};
 
-  state = { text: '' };
+  state = { title: '', message: '' };
 
   componentDidUpdate() {
     console.log('Form updated');
   }
 
-  changeText = ({ target: { value } }) => this.setState({ text: value });
+  changeText = ({ target: { name, value } }) =>
+    this.setState({ [name]: value });
 
   submit = e => {
     e.preventDefault();
-    this.props.onSubmit(this.state.text);
-    this.setState({ text: '' });
+    this.props.onSubmit(this.state);
+    this.setState({ title: '', message: '' });
   };
 
   render() {
-    const { text } = this.state;
+    const { title, message } = this.state;
     return (
       <form onSubmit={this.submit}>
-        <input value={text} onChange={this.changeText} />
+        <label>
+          Title
+          <input name="title" value={title} onChange={this.changeText} />
+        </label>
+        <label>
+          Message
+          <input name="message" value={message} onChange={this.changeText} />
+        </label>
         <button>Add todo</button>
       </form>
     );

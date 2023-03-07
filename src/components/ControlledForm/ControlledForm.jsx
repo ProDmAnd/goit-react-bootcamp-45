@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
-import css from './ControlledFrom.module.css';
-import { CITY_OPTIONS, GENDER_OPTIONS } from 'constants/loginForm';
 import Button from 'components/Button/Button';
-import { PureComponent } from 'react';
+import { CITY_OPTIONS, GENDER_OPTIONS } from 'constants/loginForm';
+import React, { PureComponent } from 'react';
+import css from './ControlledFrom.module.css';
 
 class ControlledForm extends PureComponent {
   /** @type {HTMLInputElement} */
@@ -18,10 +17,6 @@ class ControlledForm extends PureComponent {
 
   componentDidMount() {
     this.emailInputRef.focus();
-    console.log(this.emailInputRef);
-    setTimeout(() => {
-      this.setState({ showEmail: false });
-    }, 3000);
   }
 
   componentDidUpdate() {
@@ -31,6 +26,7 @@ class ControlledForm extends PureComponent {
   /** @param {React.FormEvent<HTMLFormElement>} event */
   handleSubmit = event => {
     event.preventDefault();
+    this.props.onSubmit(this.state);
     console.log(this.state);
   };
 
@@ -45,25 +41,23 @@ class ControlledForm extends PureComponent {
   };
 
   render() {
-    const { email, password, agree, gender, city, showEmail } = this.state;
+    const { email, password, agree, gender, city } = this.state;
     const canSubmit =
       email && password.length > 5 && agree && gender !== GENDER_OPTIONS.skip;
 
     return (
       <form onSubmit={this.handleSubmit} className={css.form}>
-        {showEmail && (
-          <div className={css.field}>
-            <label htmlFor={this.emailField}>Email</label>
-            <input
-              ref={ref => (this.emailInputRef = ref)}
-              name="email"
-              placeholder="Enter your email"
-              type="email"
-              value={email}
-              onInput={this.handleChangeValue}
-            />
-          </div>
-        )}
+        <div className={css.field}>
+          <label htmlFor={this.emailField}>Email</label>
+          <input
+            ref={ref => (this.emailInputRef = ref)}
+            name="email"
+            placeholder="Enter your email"
+            type="email"
+            value={email}
+            onInput={this.handleChangeValue}
+          />
+        </div>
 
         <div className={css.field}>
           <label htmlFor={this.emailField}>Password</label>

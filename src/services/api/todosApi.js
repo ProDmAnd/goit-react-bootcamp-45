@@ -21,3 +21,12 @@ export const getTodoById = async id => {
     throw new Error('Нічого не знайдено');
   }
 };
+
+export const addNewTodo = async ({ title = '', message = '' }) => {
+  try {
+    const response = await todosInstance.post('', { title, message });
+    return response.data;
+  } catch (error) {
+    throw new Error('Нічого не знайдено');
+  }
+};

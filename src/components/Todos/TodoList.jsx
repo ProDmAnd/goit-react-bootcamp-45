@@ -1,15 +1,11 @@
 import Button from 'components/Button/Button';
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function TodoList({ todos = [], deleteTodo = () => {} }) {
-  useEffect(() => {
-    console.log('Todo List did mount');
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    return () => {
-      console.log('Todo List will unmount');
-    };
-  }, []);
   return (
     <ul
       style={{
@@ -29,8 +25,13 @@ export default function TodoList({ todos = [], deleteTodo = () => {} }) {
             borderRadius: 10,
           }}
         >
-          <p>
-            <Link to={`${todo.id}`}>{todo.title}</Link>
+          <p
+            style={{ cursor: 'pointer' }}
+            onClick={() =>
+              navigate(todo.id.toString(), { state: { from: location } })
+            }
+          >
+            {todo.title}
           </p>
           <p>Completed: {todo.completed?.toString()}</p>
           <Button onClick={() => deleteTodo(todo.id)}>Delete</Button>
