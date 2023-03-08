@@ -1,15 +1,24 @@
 import React, { forwardRef } from 'react';
-import s from './Button.module.css';
 
-const Button = ({ onClick, children, color, ...restProps }, ref) => {
+const Button = (
+  {
+    selected,
+    onClick,
+    children,
+    color,
+    selectedColor = '#30ADF2',
+    ...restProps
+  },
+  ref
+) => {
   return (
     <button
       ref={ref}
       onClick={onClick}
-      className={s.button}
       style={{
         borderRadius: 4,
-        backgroundColor: color,
+        backgroundColor: selected ? selectedColor : color,
+        color: selected ? 'white' : 'black',
         padding: '8px 16px',
         border: 'none',
       }}

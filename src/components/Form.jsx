@@ -1,4 +1,6 @@
+import { addTodoAction } from 'app/store';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 export class Form extends Component {
   static propTypes = {};
@@ -14,7 +16,8 @@ export class Form extends Component {
 
   submit = e => {
     e.preventDefault();
-    this.props.onSubmit(this.state);
+    // this.props.onSubmit(this.state);
+    this.props.addTodo(this.state);
     this.setState({ title: '', message: '' });
   };
 
@@ -36,4 +39,20 @@ export class Form extends Component {
   }
 }
 
-export default Form;
+const mapStateToProps = state => ({
+  todoList: state.todos,
+});
+// Long notation
+// const mapDispatchToProps = (dispatch) => ({
+//   addTodo: ({ title, message }) => dispatch({
+//     type: addTodoAction,
+//     payload: { title, message },
+//   }),
+// });
+
+// Short notation
+const mapDispatchToProps = {
+  addTodo: ({ title, message }) => addTodoAction({ title, message }),
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form);

@@ -1,21 +1,40 @@
+import { statusFilters } from 'app/constants';
+import {
+  addTodoAction,
+  deleteTodoAction,
+  toggleTodoCompletedAction
+} from 'app/store';
 import Button from 'components/Button/Button';
-import { useToggle } from 'hooks/useToggle';
-import { useCallback } from 'react';
-import { useMemo } from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { getTodos } from 'services/api/todosApi';
 import ErrorBoundary from 'components/ErrorBoundary';
 import Form from 'components/Form';
 import Modal from 'components/Modal';
 import TodoList from 'components/Todos/TodoList';
-import { useUserContext } from 'contexts/UserProvider';
-import { Navigate, useSearchParams } from 'react-router-dom';
+import { StatusFilter } from 'components/Todos/TodosFilter';
+import { useToggle } from 'hooks/useToggle';
+import { useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, useLocation, useSearchParams } from 'react-router-dom';
+
+const getVisibleTasks = (tasks, statusFilter) => {
+  switch (statusFilter) {
+    case statusFilters.active:
+      return tasks.filter(task => !task.completed);
+    case statusFilters.completed:
+      return tasks.filter(task => task.completed);
+    default:
+      return tasks;
+  }
+};
 
 const Todos = () => {
-  const { isLoggedIn } = useUserContext();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams({ search: '' });
-  const [todos, setTodos] = useState([]);
+  const dispatch = useDispatch();
+  const todos = useSelector(state => state.todos);
+
+  const todoStatus = useSelector(state => state.filters.status);
+  const isLoggedIn = useSelector(state => state.user.isLoggedIn);
+  // const [todos, setTodos] = useState([]);
   // const [search, setSearch] = useState('');
   const handleSearch = useCallback(
     ({ target: { value } }) =>
@@ -28,24 +47,28 @@ const Todos = () => {
 
   const addTodoModal = useToggle();
 
-  const addTodo = () => {};
+  const addTodo = ({ title, message }) => {
+    dispatch(addTodoAction({ title, message }));
+  };
 
-  const deleteTodo = () => {};
+  const deleteTodo = id => {
+    dispatch(deleteTodoAction(id));
+  };
+
+  const toggleCompleted = id => {
+    dispatch(toggleTodoCompletedAction(id));
+  };
 
   const filteredTodos = useMemo(() => {
     const searchString = searchParams.get('search').toLowerCase();
-    return todos.filter(({ title }) =>
+    const todosFilteredByStatus = getVisibleTasks(todos, todoStatus);
+    return todosFilteredByStatus.filter(({ title }) =>
       title.toLowerCase().includes(searchString)
     );
-  }, [todos, searchParams]);
-
-  useEffect(() => {
-    if (!isLoggedIn) return;
-    getTodos().then(setTodos);
-  }, [isLoggedIn]);
+  }, [todos, searchParams, todoStatus]);
 
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return (
@@ -71,8 +94,13 @@ const Todos = () => {
           Add New Todo
         </Button>
         <input value={searchParams.get('search')} onChange={handleSearch} />
+        <StatusFilter />
         <ErrorBoundary>
-          <TodoList todos={filteredTodos} deleteTodo={deleteTodo} />
+          <TodoList
+            todos={filteredTodos}
+            deleteTodo={deleteTodo}
+            toggleCompleted={toggleCompleted}
+          />
         </ErrorBoundary>
       </div>
     </>

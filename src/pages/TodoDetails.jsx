@@ -1,12 +1,11 @@
-import { useUserContext } from 'contexts/UserProvider';
 import moment from 'moment';
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import { getTodoById } from 'services/api/todosApi';
 
 const TodoDetails = () => {
-  const { isLoggedIn } = useUserContext();
+  const isLoggedIn = useSelector(state => state.user.isLoggedIn);
   const { id } = useParams();
   const location = useLocation();
   const [todo, setTodo] = useState({});

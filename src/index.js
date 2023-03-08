@@ -1,19 +1,20 @@
+import App from 'App';
+import store from 'app/store';
+import ThemeProvider from 'contexts/ThemeProvider';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from 'App';
-import './index.css';
-import ThemeProvider from 'contexts/ThemeProvider';
+import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import UserProvider from 'contexts/UserProvider';
+import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter basename="react-homework-template">
-      <UserProvider>
+    <Provider store={store}>
+      <BrowserRouter basename="react-homework-template">
         <ThemeProvider>
           <App />
         </ThemeProvider>
-      </UserProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );

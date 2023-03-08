@@ -2,7 +2,11 @@ import Button from 'components/Button/Button';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-export default function TodoList({ todos = [], deleteTodo = () => {} }) {
+export default function TodoList({
+  todos = [],
+  deleteTodo = () => {},
+  toggleCompleted = () => {},
+}) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,7 +37,12 @@ export default function TodoList({ todos = [], deleteTodo = () => {} }) {
           >
             {todo.title}
           </p>
-          <p>Completed: {todo.completed?.toString()}</p>
+          <p
+            style={{ cursor: 'pointer' }}
+            onClick={() => toggleCompleted(todo.id)}
+          >
+            Completed: {todo.completed?.toString()}
+          </p>
           <Button onClick={() => deleteTodo(todo.id)}>Delete</Button>
         </li>
       ))}
