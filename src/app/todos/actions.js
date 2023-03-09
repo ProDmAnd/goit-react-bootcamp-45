@@ -1,17 +1,11 @@
-import { actionCreator } from "app/actionCreator";
+import { createAction, nanoid } from '@reduxjs/toolkit';
 
-export const deleteTodoActionType = 'todos/deleteTodo';
-export const addTodoActionType = 'todos/addTodo';
-export const changeTodoFilterActionType = 'filters/changeStatus';
-export const toggleTodoCompletedActionType = 'todos/toggleCompleted';
-
-export const deleteTodoAction = payload => ({
-  type: deleteTodoActionType,
-  payload,
-});
-
-export const addTodoAction = actionCreator(addTodoActionType);
-export const changeTodoFilterAction = actionCreator(changeTodoFilterActionType);
-export const toggleTodoCompletedAction = actionCreator(
-  toggleTodoCompletedActionType
+export const addTodoAction = createAction(
+  'todos/addTodo',
+  ({ title, message }) => ({
+    payload: { title, message, completed: false, id: nanoid() },
+  })
 );
+export const deleteTodoAction = createAction('todos/deleteTodo');
+export const changeTodoFilterAction = createAction('filters/changeStatus');
+export const toggleTodoCompletedAction = createAction('todos/toggleCompleted');

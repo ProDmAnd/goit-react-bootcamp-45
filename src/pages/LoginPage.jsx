@@ -1,4 +1,4 @@
-import { userLoginAction } from 'app/user/actions';
+import { userActions } from 'app/user/slice';
 import ControlledForm from 'components/ControlledForm/ControlledForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
@@ -9,7 +9,7 @@ const LoginPage = () => {
   const location = useLocation();
 
   const handleSubmit = async values => {
-    dispatch(userLoginAction(values));
+    dispatch(userActions.login(values));
   };
 
   if (isLoggedIn) {

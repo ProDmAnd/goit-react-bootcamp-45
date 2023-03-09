@@ -1,9 +1,6 @@
 import { statusFilters } from 'app/constants';
-import {
-  addTodoAction,
-  deleteTodoAction,
-  toggleTodoCompletedAction
-} from 'app/todos/actions';
+import { useAppSelector } from 'app/reduxHooks';
+import { todosActions } from 'app/todos/slice';
 import Button from 'components/Button/Button';
 import ErrorBoundary from 'components/ErrorBoundary';
 import Form from 'components/Form';
@@ -12,10 +9,16 @@ import TodoList from 'components/Todos/TodoList';
 import { StatusFilter } from 'components/Todos/TodosFilter';
 import { useToggle } from 'hooks/useToggle';
 import { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Navigate, useLocation, useSearchParams } from 'react-router-dom';
 
-const getVisibleTasks = (tasks, statusFilter) => {
+/**
+ * @template T
+ * @param {T} tasks
+ * @param {string} statusFilter
+ * @returns {T}
+ */
+const getVisibleTasks = (tasks = [], statusFilter) => {
   switch (statusFilter) {
     case statusFilters.active:
       return tasks.filter(task => !task.completed);
@@ -30,10 +33,10 @@ const Todos = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams({ search: '' });
   const dispatch = useDispatch();
-  const todos = useSelector(state => state.todos);
+  const todos = useAppSelector(state => state.todos.todos);
 
-  const todoStatus = useSelector(state => state.filters.status);
-  const isLoggedIn = useSelector(state => state.user.isLoggedIn);
+  const todoStatus = useAppSelector(state => state.filters.status);
+  const isLoggedIn = useAppSelector(state => state.user.isLoggedIn);
   // const [todos, setTodos] = useState([]);
   // const [search, setSearch] = useState('');
   const handleSearch = useCallback(
@@ -48,15 +51,15 @@ const Todos = () => {
   const addTodoModal = useToggle();
 
   const addTodo = ({ title, message }) => {
-    dispatch(addTodoAction({ title, message }));
+    dispatch(todosActions.addTodo({ title, message }));
   };
 
   const deleteTodo = id => {
-    dispatch(deleteTodoAction(id));
+    dispatch(todosActions.deleteTodo(id));
   };
 
   const toggleCompleted = id => {
-    dispatch(toggleTodoCompletedAction(id));
+    dispatch(todosActions.toggleCompleted(id));
   };
 
   const filteredTodos = useMemo(() => {

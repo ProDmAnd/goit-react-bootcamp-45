@@ -1,21 +1,24 @@
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
-import { getTodoById } from 'services/api/todosApi';
 
 const TodoDetails = () => {
-  const isLoggedIn = useSelector(state => state.user.isLoggedIn);
   const { id } = useParams();
+  const isLoggedIn = useSelector(state => state.user.isLoggedIn);
+  const todo = useSelector(state => state.todos.todos.find(todo => todo.id === id));
   const location = useLocation();
-  const [todo, setTodo] = useState({});
-  useEffect(() => {
-    if (!isLoggedIn) return;
-    getTodoById(id).then(setTodo);
-  }, [id, isLoggedIn]);
+  // const [todo, setTodo] = useState({});
+  // useEffect(() => {
+  //   if (!isLoggedIn) return;
+  //   getTodoById(id).then(setTodo);
+  // }, [id, isLoggedIn]);
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+  if (!todo) {
+    return <Navigate to="/todos" replace />;
   }
   return (
     <div style={{ padding: '16px 0px' }}>

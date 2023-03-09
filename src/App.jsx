@@ -22,6 +22,7 @@ const LoginPageLazy = React.lazy(() =>
 
 const App = () => {
   const location = useLocation();
+
   useEffect(() => {
     console.log(location);
   }, [location]);

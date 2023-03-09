@@ -1,7 +1,4 @@
-import { actionCreator } from 'app/actionCreator';
+import { createAction } from '@reduxjs/toolkit';
 
-export const userLoginActionType = 'user/login';
-export const userLogoutActionType = 'user/logout';
-
-export const userLoginAction = actionCreator(userLoginActionType);
-export const userLogoutAction = actionCreator(userLogoutActionType);
+export const userLoginAction = createAction('user/login');
+export const userLogoutAction = createAction('user/logout');

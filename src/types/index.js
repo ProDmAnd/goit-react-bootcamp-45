@@ -1,0 +1,1 @@
+/** @typedef {ReturnType<import('app/store')['default']['getState']>} RootState */

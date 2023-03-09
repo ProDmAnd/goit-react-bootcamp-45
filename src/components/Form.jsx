@@ -1,4 +1,4 @@
-import { addTodoAction } from 'app/todos/actions';
+import { todosActions } from 'app/todos/slice';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
@@ -52,7 +52,7 @@ const mapStateToProps = state => ({
 
 // Short notation
 const mapDispatchToProps = {
-  addTodo: ({ title, message }) => addTodoAction({ title, message }),
+  addTodo: ({ title, message }) => todosActions.addTodo({ title, message }),
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form);
