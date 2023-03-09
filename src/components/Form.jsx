@@ -1,4 +1,4 @@
-import { addTodoAction } from 'app/store';
+import { addTodoAction } from 'app/todos/actions';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 

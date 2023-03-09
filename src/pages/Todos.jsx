@@ -3,7 +3,7 @@ import {
   addTodoAction,
   deleteTodoAction,
   toggleTodoCompletedAction
-} from 'app/store';
+} from 'app/todos/actions';
 import Button from 'components/Button/Button';
 import ErrorBoundary from 'components/ErrorBoundary';
 import Form from 'components/Form';

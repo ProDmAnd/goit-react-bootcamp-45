@@ -3,7 +3,8 @@ import Button from 'components/Button/Button';
 import { useDispatch, useSelector } from 'react-redux';
 // Імпортуємо об'єкт значень фільтра
 import { statusFilters } from 'app/constants';
-import { changeTodoFilterAction } from 'app/store';
+import { changeTodoFilterAction } from 'app/todos/actions';
+
 export const StatusFilter = () => {
   const dispatch = useDispatch();
   // Отримуємо значення фільтра із стану Redux
