@@ -1,4 +1,4 @@
-import Button from 'components/Button/Button';
+import { Button, Link, List, ListItem, ListItemText } from '@mui/material';
 import React from 'react';
 import NewsContentLoader from './NewsContentLoader';
 
@@ -22,16 +22,22 @@ const NewsList = ({
     <NewsContentLoader hitsPerPage={hitsPerPage} />
   ) : (
     <>
-      <ul>
-        {list.map(({ objectID, title, url }) => (
-          <li key={objectID}>
-            <a href={url} target="_blank" rel="noreferrer">
-              {title}
-            </a>
-          </li>
+      <List dense>
+        {list.map(({ objectID, title, url, author }) => (
+          <ListItem key={objectID}>
+            <ListItemText
+              primary={
+                <Link href={url} underline="hover">
+                  {title}
+                </Link>
+              }
+              secondary={author}
+            />
+          </ListItem>
         ))}
-      </ul>
-      <Button theme={theme} onClick={loadMore}>
+      </List>
+
+      <Button variant="contained" onClick={loadMore}>
         Load more
       </Button>
     </>

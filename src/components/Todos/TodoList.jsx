@@ -10,6 +10,16 @@ export default function TodoList({
   const navigate = useNavigate();
   const location = useLocation();
 
+  const todoAction =
+    (callback = () => {}, data) =>
+    () =>
+      callback(data);
+
+  const toggleTodo = (id, someString) => {
+    return () => {
+      toggleCompleted(id, someString);
+    };
+  };
   return (
     <ul
       style={{
@@ -39,11 +49,11 @@ export default function TodoList({
           </p>
           <p
             style={{ cursor: 'pointer' }}
-            onClick={() => toggleCompleted(todo.id)}
+            onClick={toggleTodo(todo.id, 'Якась строка')}
           >
             Completed: {todo.completed?.toString()}
           </p>
-          <Button onClick={() => deleteTodo(todo.id)}>Delete</Button>
+          <Button onClick={todoAction(deleteTodo, todo.id)}>Delete</Button>
         </li>
       ))}
     </ul>

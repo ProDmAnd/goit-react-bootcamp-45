@@ -28,7 +28,7 @@ const App = () => {
   }, [location]);
 
   return (
-    <div style={{ padding: 30 }}>
+    <>
       <Routes>
         <Route path="/" element={<SharedLayout />}>
           <Route index element={<NewsLazy />} />
@@ -41,7 +41,7 @@ const App = () => {
         </Route>
       </Routes>
       <ToastContainer />
-    </div>
+    </>
   );
 };
 

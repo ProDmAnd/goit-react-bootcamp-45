@@ -1,5 +1,5 @@
 import { userActions } from 'app/user/slice';
-import ControlledForm from 'components/ControlledForm/ControlledForm';
+import LoginForm from 'components/LoginForm/LoginForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation } from 'react-router-dom';
 
@@ -17,10 +17,10 @@ const LoginPage = () => {
   }
 
   return (
-    <div>
+    <>
       <h1>Login page</h1>
-      <ControlledForm onSubmit={handleSubmit} />
-    </div>
+      <LoginForm onSubmit={handleSubmit} />
+    </>
   );
 };
 
