@@ -1,5 +1,16 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { statusFilters } from 'app/constants';
+import { addTodo, deleteTodo, fetchTodosThunk, updateTodo } from './operations';
+
+const startLoading = state => {
+  state.isLoading = true;
+  state.error = '';
+};
+
+const handleError = (state, { payload }) => {
+  state.error = payload.message;
+  state.isLoading = false;
+};
 
 const todosSlice = createSlice({
   initialState: {
@@ -8,41 +19,58 @@ const todosSlice = createSlice({
     filters: {
       status: statusFilters.all,
     },
+    isLoading: false,
+    error: '',
+    processingTodoId: '',
   },
   name: 'todos',
   reducers: {
-    addTodo: {
-      prepare(payload) {
-        return {
-          payload: {
-            ...payload,
-            completed: false,
-            id: nanoid(),
-            createdAt: new Date().toISOString(),
-          },
-        };
-      },
-      reducer(state, { payload }) {
-        state.todos.push(payload);
-      },
-    },
-    deleteTodo(state, { payload }) {
-      return {
-        ...state,
-        todos: state.todos.filter(({ id }) => id !== payload),
-      };
-    },
-    toggleCompleted(state, { payload }) {
-      for (const todo of state.todos) {
-        if (todo.id === payload) {
-          todo.completed = !todo.completed;
-          break;
-        }
-      }
-    },
     changeStatusFilter(state, { payload }) {
       state.filters.status = payload;
     },
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchTodosThunk.pending, startLoading)
+      .addCase(fetchTodosThunk.fulfilled, (state, { payload }) => {
+        state.todos = payload;
+        state.isLoading = false;
+      })
+      .addCase(fetchTodosThunk.rejected, handleError)
+      .addCase(addTodo.pending, startLoading)
+      .addCase(addTodo.fulfilled, (state, { payload }) => {
+        state.todos.push(payload);
+        state.isLoading = false;
+      })
+      .addCase(addTodo.rejected, handleError)
+      .addCase(deleteTodo.pending, (state, { meta }) => {
+        state.error = '';
+        state.processingTodoId = meta.arg;
+      })
+      .addCase(deleteTodo.fulfilled, (state, { payload }) => {
+        state.todos = state.todos.filter(({ id }) => id !== payload.id);
+        state.isLoading = false;
+        state.processingTodoId = '';
+      })
+      .addCase(deleteTodo.rejected, (state, { payload }) => {
+        state.processingTodoId = '';
+        state.error = payload.message;
+      })
+      .addCase(updateTodo.pending, (state, { meta }) => {
+        state.error = '';
+        state.processingTodoId = meta.arg.todoId;
+      })
+      .addCase(updateTodo.fulfilled, (state, { payload }) => {
+        state.todos = state.todos.map(todo =>
+          todo.id === payload.id ? payload : todo
+        );
+        state.isLoading = false;
+        state.processingTodoId = '';
+      })
+      .addCase(updateTodo.rejected, (state, { payload }) => {
+        state.processingTodoId = '';
+        state.error = payload.message;
+      });
   },
 });
 

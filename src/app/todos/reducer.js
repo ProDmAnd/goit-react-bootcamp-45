@@ -6,6 +6,7 @@ import {
   deleteTodoAction,
   toggleTodoCompletedAction
 } from './actions';
+import { fetchTodosThunk } from './operations';
 import initialTodos from './todos.json';
 
 export const todosReducer = createReducer(initialTodos, {
@@ -16,6 +17,7 @@ export const todosReducer = createReducer(initialTodos, {
     state.map(todo =>
       todo.id === payload ? { ...todo, completed: !todo.completed } : todo
     ),
+  [fetchTodosThunk.fulfilled]: (state, { payload }) => payload,
 });
 
 // export const todosReducer = (state = initialState, { type, payload }) => {

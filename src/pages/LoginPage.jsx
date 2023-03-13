@@ -1,3 +1,4 @@
+import { fetchTodosThunk } from 'app/todos/operations';
 import { userActions } from 'app/user/slice';
 import LoginForm from 'components/LoginForm/LoginForm';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +11,7 @@ const LoginPage = () => {
 
   const handleSubmit = async values => {
     dispatch(userActions.login(values));
+    dispatch(fetchTodosThunk());
   };
 
   if (isLoggedIn) {

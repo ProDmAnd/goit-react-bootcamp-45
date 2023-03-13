@@ -1,18 +1,23 @@
+import { fetchNewsByQuery } from 'app/news/operations';
+import { useAppSelector } from 'app/reduxHooks';
 import Button from 'components/Button/Button';
 import NewsList from 'components/News/NewsList';
 import useIsMount from 'hooks/useIsMount';
 import { useToggle } from 'hooks/useToggle';
-import React, { memo, useEffect, useMemo, useRef } from 'react';
-import { toast } from 'react-hot-toast';
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { useAsyncFn } from 'react-use';
-import { getNews } from 'services/api/newsApi';
 
 const News = () => {
+  const dispatch = useDispatch();
   const isMount = useIsMount();
   const searchRef = useRef();
   /** @type {React.RefObject<HTMLButtonElement>} */
   const incrementButtonRef = useRef();
+
+  const isLoading = useAppSelector(state => state.news.isLoading);
+  const error = useAppSelector(state => state.news.error);
+  const list = useAppSelector(state => state.news.list);
 
   const [searchParams, setSearchParams] = useSearchParams({
     hitsPerPage: 10,
@@ -30,42 +35,20 @@ const News = () => {
     setSearchParams(searchParams);
   };
 
-  const [{ value: list = [], error, loading: isLoading }, fetchNews] =
-    useAsyncFn(async ({ query = '', hitsPerPage, page } = {}) => {
-      const response = await toast.promise(
-        getNews({
-          query,
-          hitsPerPage,
-          page,
-        }),
-        {
-          success: response =>
-            response.hits.length ? 'News loaded' : 'Nothings found',
-          error: 'Nothings found',
-          loading: 'Fetching news',
-        }
-      );
-      return response.hits;
-    });
-
   const params = useMemo(() => {
     return Object.fromEntries([...searchParams]);
   }, [searchParams]);
 
-  useEffect(() => {
-    console.debug(params);
-    fetchNews(params);
-  }, [searchParams, params, fetchNews]);
+  const getNews = useCallback(
+    params => {
+      dispatch(fetchNewsByQuery(params));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
-    if (!isMount) return;
-    if (!isLoading && list.length) {
-      incrementButtonRef.current.scrollIntoView({
-        behavior: 'smooth',
-        inline: 'end',
-      });
-    }
-  }, [isLoading, list, isMount]);
+    getNews(params);
+  }, [searchParams, params, getNews]);
 
   const registrationModal = useToggle(false);
 
@@ -85,7 +68,7 @@ const News = () => {
           ref={searchRef}
           value={params.query}
           onChange={changeQuery}
-          onKeyDown={e => (e.code === 'Enter' ? fetchNews(params) : null)}
+          onKeyDown={e => (e.code === 'Enter' ? getNews(params) : null)}
         />
         <select value={params.hitsPerPage} onChange={changeHitsPerPage}>
           {[10, 25, 50, 100].map(count => (
@@ -94,7 +77,7 @@ const News = () => {
             </option>
           ))}
         </select>
-        <Button type="button" onClick={() => fetchNews(params)}>
+        <Button type="button" onClick={() => getNews(params)}>
           Search
         </Button>
       </div>
@@ -105,7 +88,7 @@ const News = () => {
         {error?.message && <p>{error.message}</p>}
         <NewsList
           isLoading={isLoading}
-          list={list}
+          list={memoizedList}
           hitsPerPage={Number(params.hitsPerPage) || 10}
         />
       </div>

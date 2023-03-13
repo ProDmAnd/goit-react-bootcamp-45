@@ -1,14 +1,15 @@
 // Імпортуємо хук
 import Button from 'components/Button/Button';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 // Імпортуємо об'єкт значень фільтра
 import { statusFilters } from 'app/constants';
+import { useAppSelector } from 'app/reduxHooks';
 import { changeTodoFilterAction } from 'app/todos/actions';
 
 export const StatusFilter = () => {
   const dispatch = useDispatch();
   // Отримуємо значення фільтра із стану Redux
-  const filter = useSelector(state => state.filters.status);
+  const filter = useAppSelector(state => state.filters.status);
   return (
     <div>
       <Button

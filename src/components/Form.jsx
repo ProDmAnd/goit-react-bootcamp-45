@@ -39,20 +39,5 @@ export class Form extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  todoList: state.todos,
-});
-// Long notation
-// const mapDispatchToProps = (dispatch) => ({
-//   addTodo: ({ title, message }) => dispatch({
-//     type: addTodoAction,
-//     payload: { title, message },
-//   }),
-// });
 
-// Short notation
-const mapDispatchToProps = {
-  addTodo: ({ title, message }) => todosActions.addTodo({ title, message }),
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Form);
+export default Form;

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
+import ToastContainer from 'react-hot-toast';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
 
 import SharedLayout from './components/SharedLayout/SharedLayout';
 import TodosSharedLayout from './components/TodosSharedLayout';

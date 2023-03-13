@@ -1,4 +1,5 @@
-import Button from 'components/Button/Button';
+import { Button } from '@mui/material';
+import { useAppSelector } from 'app/reduxHooks';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -9,6 +10,9 @@ export default function TodoList({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const processingTodoId = useAppSelector(
+    state => state.todos.processingTodoId
+  );
 
   const todoAction =
     (callback = () => {}, data) =>
@@ -53,7 +57,13 @@ export default function TodoList({
           >
             Completed: {todo.completed?.toString()}
           </p>
-          <Button onClick={todoAction(deleteTodo, todo.id)}>Delete</Button>
+          <Button
+            variant="contained"
+            disabled={todo.id === processingTodoId}
+            onClick={todoAction(deleteTodo, todo.id)}
+          >
+            {todo.id === processingTodoId ? 'Processing...' : 'Delete'}
+          </Button>
         </li>
       ))}
     </ul>

@@ -1,6 +1,8 @@
+import { CircularProgress } from '@mui/material';
 import { statusFilters } from 'app/constants';
 import { useAppSelector } from 'app/reduxHooks';
-import { todosActions } from 'app/todos/slice';
+import * as todosOperations from 'app/todos/operations';
+import todoSelectors from 'app/todos/selectors';
 import Button from 'components/Button/Button';
 import ErrorBoundary from 'components/ErrorBoundary';
 import Form from 'components/Form';
@@ -8,7 +10,7 @@ import Modal from 'components/Modal';
 import TodoList from 'components/Todos/TodoList';
 import { StatusFilter } from 'components/Todos/TodosFilter';
 import { useToggle } from 'hooks/useToggle';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { Navigate, useLocation, useSearchParams } from 'react-router-dom';
 
@@ -33,7 +35,9 @@ const Todos = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams({ search: '' });
   const dispatch = useDispatch();
-  const todos = useAppSelector(state => state.todos.todos);
+  const todos = useAppSelector(todoSelectors.getTodos);
+  const todosLoading = useAppSelector(todoSelectors.getIsLoading);
+  const errorMessage = useAppSelector(todoSelectors.getError);
 
   const todoStatus = useAppSelector(state => state.filters.status);
   const isLoggedIn = useAppSelector(state => state.user.isLoggedIn);
@@ -51,15 +55,17 @@ const Todos = () => {
   const addTodoModal = useToggle();
 
   const addTodo = ({ title, message }) => {
-    dispatch(todosActions.addTodo({ title, message }));
+    dispatch(todosOperations.addTodo({ title, message }));
   };
 
   const deleteTodo = id => {
-    dispatch(todosActions.deleteTodo(id));
+    dispatch(todosOperations.deleteTodo(id));
   };
 
   const toggleCompleted = id => {
-    dispatch(todosActions.toggleCompleted(id));
+    dispatch(
+      todosOperations.updateTodo({ todoId: id, update: { completed: true } })
+    );
   };
 
   const filteredTodos = useMemo(() => {
@@ -69,6 +75,10 @@ const Todos = () => {
       title.toLowerCase().includes(searchString)
     );
   }, [todos, searchParams, todoStatus]);
+
+  useEffect(() => {
+    dispatch(todosOperations.fetchTodosThunk());
+  }, [dispatch]);
 
   if (!isLoggedIn) {
     return <Navigate to="/login" state={{ from: location }} replace />;
@@ -89,7 +99,7 @@ const Todos = () => {
         {addTodoModal.isOpen && (
           <Modal onClose={addTodoModal.close}>
             <ErrorBoundary>
-              <Form onSubmit={addTodo} />
+              <Form addTodo={addTodo} />
             </ErrorBoundary>
           </Modal>
         )}
@@ -98,6 +108,8 @@ const Todos = () => {
         </Button>
         <input value={searchParams.get('search')} onChange={handleSearch} />
         <StatusFilter />
+        {todosLoading && <CircularProgress size={50} />}
+        {errorMessage && <h3>{errorMessage}</h3>}
         <ErrorBoundary>
           <TodoList
             todos={filteredTodos}
