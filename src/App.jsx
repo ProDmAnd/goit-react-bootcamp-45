@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import ToastContainer from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import SharedLayout from './components/SharedLayout/SharedLayout';
@@ -40,7 +40,7 @@ const App = () => {
           <Route path="*" element={<FallbackComponent />} />
         </Route>
       </Routes>
-      <ToastContainer />
+      <Toaster />
     </>
   );
 };

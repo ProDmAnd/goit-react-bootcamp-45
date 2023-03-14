@@ -1,29 +1,45 @@
 import { Button } from '@mui/material';
 import { useAppSelector } from 'app/reduxHooks';
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import * as todosOperations from 'app/todos/operations';
+import { selectVisibleTodosOptimized } from 'app/todos/selectors';
+import React, { useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-export default function TodoList({
-  todos = [],
-  deleteTodo = () => {},
-  toggleCompleted = () => {},
-}) {
+export default function TodoList() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const processingTodoId = useAppSelector(
     state => state.todos.processingTodoId
   );
+  const visibleTodos = useAppSelector(selectVisibleTodosOptimized);
+
+  const filteredTodos = useMemo(() => {
+    const searchString = searchParams.get('search').toLowerCase();
+    return visibleTodos.filter(({ title }) =>
+      title.toLowerCase().includes(searchString)
+    );
+  }, [visibleTodos, searchParams]);
 
   const todoAction =
     (callback = () => {}, data) =>
     () =>
       callback(data);
 
-  const toggleTodo = (id, someString) => {
+  const deleteTodo = id => {
+    dispatch(todosOperations.deleteTodo(id));
+  };
+
+  const toggleTodo = (id, completed) => {
     return () => {
-      toggleCompleted(id, someString);
+      dispatch(
+        todosOperations.updateTodo({ todoId: id, update: { completed } })
+      );
     };
   };
+
   return (
     <ul
       style={{
@@ -32,7 +48,7 @@ export default function TodoList({
         gap: 20,
       }}
     >
-      {todos.map(todo => (
+      {filteredTodos.map(todo => (
         <li
           key={todo.id}
           style={{
@@ -53,7 +69,7 @@ export default function TodoList({
           </p>
           <p
             style={{ cursor: 'pointer' }}
-            onClick={toggleTodo(todo.id, 'Якась строка')}
+            onClick={toggleTodo(todo.id, !todo.completed)}
           >
             Completed: {todo.completed?.toString()}
           </p>

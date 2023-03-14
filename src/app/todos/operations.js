@@ -1,9 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const todosInstance = axios.create({
   baseURL: 'https://63bb3a8432d17a50908aa204.mockapi.io/tasks-list',
 });
+
+const errors = {
+  404: 'Нічого не знайдено',
+};
 
 export const fetchTodosThunk = createAsyncThunk(
   'fetchTodos',
@@ -48,7 +53,16 @@ export const updateTodo = createAsyncThunk(
   'updateTodo',
   async ({ update, todoId }, thunkApi) => {
     try {
-      const response = await todosInstance.put(`/${todoId}`, update);
+      const response = await toast.promise(
+        todosInstance.put(`/${todoId}`, update),
+        {
+          success: resp =>
+            `Задача помічена ${
+              resp.data.completed ? 'завершеною' : 'в процессі'
+            }`,
+          error: err => errors[err.response.status],
+        }
+      );
       return response.data;
     } catch (error) {
       return thunkApi.rejectWithValue({

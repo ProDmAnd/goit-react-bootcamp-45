@@ -1,6 +1,4 @@
-import { todosActions } from 'app/todos/slice';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 export class Form extends Component {
   static propTypes = {};
@@ -38,6 +36,5 @@ export class Form extends Component {
     );
   }
 }
-
 
 export default Form;
