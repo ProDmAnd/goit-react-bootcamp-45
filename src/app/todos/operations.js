@@ -71,31 +71,3 @@ export const getTodoById = createAsyncThunk(
     }
   }
 );
-
-//  const getTodos = async () => {
-//   try {
-//     const response = await todosInstance.get();
-//     return response.data;
-//   } catch (error) {
-//     throw new Error('Нічого не знайдено');
-//   }
-// };
-
-const addNewTodo = async ({ title = '', message = '' }) => {
-  try {
-    const response = await todosInstance.post('', { title, message });
-    return response.data;
-  } catch (error) {
-    throw new Error('Нічого не знайдено');
-  }
-};
-
-// export const fetchTodos = () => async (dispatch, getState) => {
-//   dispatch(todosActions.getTodosRequest());
-//   try {
-//     const todos = await getTodos();
-//     dispatch(todosActions.getTodoSuccess(todos));
-//   } catch (error) {
-//     dispatch(todosActions.getTodosError());
-//   }
-// };
