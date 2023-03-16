@@ -1,6 +1,10 @@
-import React, { useEffect } from 'react';
+import { useAppSelector } from 'app/reduxHooks';
+import PrivateRoute from 'components/PrivateRoute';
+import PublicRoute from 'components/PublicRoute';
+import React from 'react';
 import { Toaster } from 'react-hot-toast';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
 
 import SharedLayout from './components/SharedLayout/SharedLayout';
 import TodosSharedLayout from './components/TodosSharedLayout';
@@ -19,27 +23,60 @@ const NewsLazy = React.lazy(() =>
 const LoginPageLazy = React.lazy(() =>
   import('pages/LoginPage' /* webpackChunkName: 'login-page' */)
 );
+const SignUpPageLazy = React.lazy(() =>
+  import('pages/SignUpPage' /* webpackChunkName: 'sign-up-page' */)
+);
 
 const App = () => {
-  const location = useLocation();
+  const dispatch = useDispatch();
+  const isRefreshing = useAppSelector(state => state.user.isRefreshing);
 
-  useEffect(() => {
-    console.log(location);
-  }, [location]);
+  // useEffect(() => {
+  //   dispatch(userActions.refreshUser());
+  //   setTimeout(() => {
+  //     dispatch(userActions.login({ email: 'User@mail.com' }));
+  //   }, 2000);
+  // }, [dispatch]);
 
   return (
     <>
-      <Routes>
-        <Route path="/" element={<SharedLayout />}>
-          <Route index element={<NewsLazy />} />
-          <Route path="todos" element={<TodosSharedLayout />}>
-            <Route index element={<TodosLazy />} />
-            <Route path=":id" element={<TodoDetailsLazy />} />
+      {isRefreshing ? (
+        <div>Refresh User</div>
+      ) : (
+        <Routes>
+          <Route path="/" element={<SharedLayout />}>
+            <Route index element={<NewsLazy />} />
+            <Route
+              path="todos"
+              element={
+                <PrivateRoute to="/login" returnToTargetPage>
+                  <TodosSharedLayout />
+                </PrivateRoute>
+              }
+            >
+              <Route index element={<TodosLazy />} />
+              <Route path=":id" element={<TodoDetailsLazy />} />
+            </Route>
+            <Route
+              path="login"
+              element={
+                <PublicRoute to="/todos" returnToTargetPage>
+                  <LoginPageLazy />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="signup"
+              element={
+                <PublicRoute to="/todos" returnToTargetPage>
+                  <SignUpPageLazy />
+                </PublicRoute>
+              }
+            />
+            <Route path="*" element={<FallbackComponent />} />
           </Route>
-          <Route path="login" element={<LoginPageLazy />} />
-          <Route path="*" element={<FallbackComponent />} />
-        </Route>
-      </Routes>
+        </Routes>
+      )}
       <Toaster />
     </>
   );

@@ -1,32 +1,28 @@
 import {
-  combineReducers,
   configureStore
 } from '@reduxjs/toolkit';
 import {
   FLUSH,
   PAUSE,
-  PERSIST,
-  persistReducer,
-  persistStore,
+  PERSIST, persistStore,
   PURGE,
   REGISTER,
   REHYDRATE
 } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 // import { fetchNewsByQuery } from './news/operations';
 import rootReducer from './rootReducer';
 // import { fetchTodosThunk } from './todos/operations';
 
-const userPersistConfig = {
-  key: 'user',
-  storage,
-  whitelist: ['isLoggedIn'],
-};
+// const userPersistConfig = {
+//   key: 'user',
+//   storage,
+//   whitelist: ['isLoggedIn'],
+// };
 
-const persistedRootReducer = combineReducers({
-  ...rootReducer,
-  user: persistReducer(userPersistConfig, rootReducer.user),
-});
+// const persistedRootReducer = combineReducers({
+//   ...rootReducer,
+//   user: persistReducer(userPersistConfig, rootReducer.user),
+// });
 
 const customLogger = store => next => action => {
   // console.log('prevState', store.getState());
@@ -37,7 +33,7 @@ const customLogger = store => next => action => {
 };
 
 const store = configureStore({
-  reducer: persistedRootReducer,
+  reducer: rootReducer,
   middleware: getDefaultMiddelware =>
     getDefaultMiddelware({
       serializableCheck: {
@@ -56,4 +52,4 @@ export default store;
 
 // store.dispatch(initApp());
 
-export const persistor = persistStore(store);
+// export const persistor = persistStore(store);

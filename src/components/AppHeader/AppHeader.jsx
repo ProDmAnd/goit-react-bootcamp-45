@@ -95,6 +95,7 @@ function AppHeader() {
     handleCloseUserMenu();
     if (page?.logout) {
       logout();
+      return;
     }
     navigate(page?.routeTo || '/');
   };
@@ -204,12 +205,20 @@ function AppHeader() {
           </FormGroup>
 
           {!isLoggedIn ? (
-            <Button
-              onClick={openPage({ routeTo: '/login' })}
-              sx={{ my: 2, color: 'white', display: 'block' }}
-            >
-              Login
-            </Button>
+            <>
+              <Button
+                onClick={openPage({ routeTo: '/login' })}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Login
+              </Button>
+              <Button
+                onClick={openPage({ routeTo: '/signup' })}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Sign Up
+              </Button>
+            </>
           ) : (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">

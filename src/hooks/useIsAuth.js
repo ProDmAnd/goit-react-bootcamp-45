@@ -1,19 +1,25 @@
 import { useAppSelector } from 'app/reduxHooks';
-import { userActions } from 'app/user/slice';
+import { userSignIn, userSignUp } from 'app/user/operations';
+import { userLogout } from 'app/user/slice';
 import { useDispatch } from 'react-redux';
 
 const useIsAuth = () => {
   const dispatch = useDispatch();
-  const isLoggedIn = useAppSelector(state => state.user.isLoggedIn);
+  const isLoggedIn = useAppSelector(state => !!state.user.token);
 
   const login = userData => {
-    dispatch(userActions.login(userData));
+    dispatch(userSignIn(userData));
+    // dispatch(userActions.login(userData));
   };
   const logout = () => {
-    dispatch(userActions.logout());
+    dispatch(userLogout());
   };
 
-  return { isLoggedIn, login, logout };
+  const signUp = values => {
+    dispatch(userSignUp(values));
+  };
+
+  return { isLoggedIn, login, logout, signUp };
 };
 
 export default useIsAuth;

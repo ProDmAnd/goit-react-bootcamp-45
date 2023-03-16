@@ -17,7 +17,7 @@ export default function TodoList() {
   const visibleTodos = useAppSelector(selectVisibleTodosOptimized);
 
   const filteredTodos = useMemo(() => {
-    const searchString = searchParams.get('search').toLowerCase();
+    const searchString = searchParams.get('search')?.toLowerCase() || '';
     return visibleTodos.filter(({ title }) =>
       title.toLowerCase().includes(searchString)
     );

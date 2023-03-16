@@ -1,5 +1,9 @@
+// @ts-check
 import React, { Component } from 'react';
 
+/**
+@extends {Component<{addTodo: (todo: {title: string, message: string}) => void}, {title:string, message: string}>}
+ */
 export class Form extends Component {
   static propTypes = {};
 
@@ -10,8 +14,10 @@ export class Form extends Component {
   }
 
   changeText = ({ target: { name, value } }) =>
+    //@ts-ignore
     this.setState({ [name]: value });
 
+  /** @type {React.FormEventHandler<HTMLFormElement>} */
   submit = e => {
     e.preventDefault();
     // this.props.onSubmit(this.state);

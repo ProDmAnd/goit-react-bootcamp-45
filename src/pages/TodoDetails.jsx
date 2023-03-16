@@ -5,18 +5,9 @@ import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 
 const TodoDetails = () => {
   const { id } = useParams();
-  const isLoggedIn = useSelector(state => state.user.isLoggedIn);
   const todo = useSelector(state => state.todos.todos.find(todo => todo.id === id));
   const location = useLocation();
-  // const [todo, setTodo] = useState({});
-  // useEffect(() => {
-  //   if (!isLoggedIn) return;
-  //   getTodoById(id).then(setTodo);
-  // }, [id, isLoggedIn]);
 
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
   if (!todo) {
     return <Navigate to="/todos" replace />;
   }

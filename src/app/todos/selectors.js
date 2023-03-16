@@ -1,3 +1,4 @@
+// @ts-check
 import { createSelector } from '@reduxjs/toolkit';
 import { statusFilters } from 'app/constants';
 
@@ -46,16 +47,21 @@ export const selectTaskCountOptimized = createSelector([selectTodos], tasks => {
 
 /**
  * @template T
- * @param {T} tasks
+ * @param {T[]} tasks
  * @param {string} statusFilter
- * @returns {T}
+ * @param {(data: T) => boolean} filterCallback
+ * @returns {T[]}
  */
-const getVisibleTasks = (tasks = [], statusFilter) => {
+const getVisibleTasks = (
+  tasks = [],
+  statusFilter,
+  filterCallback = () => true
+) => {
   switch (statusFilter) {
     case statusFilters.active:
-      return tasks.filter(task => !task.completed);
+      return tasks.filter(filterCallback);
     case statusFilters.completed:
-      return tasks.filter(task => task.completed);
+      return tasks.filter(filterCallback);
     default:
       return tasks;
   }
@@ -66,7 +72,7 @@ export const selectVisibleTodos = state => {
   const todos = state.todos.todos;
   const filterStatus = state.todos.filters.status;
 
-  return getVisibleTasks(todos, filterStatus);
+  return getVisibleTasks(todos, filterStatus, todo => !!todo.title);
 };
 
 export const selectVisibleTodosOptimized = createSelector(

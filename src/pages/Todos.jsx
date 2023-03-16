@@ -2,7 +2,6 @@ import { CircularProgress } from '@mui/material';
 import { useAppSelector } from 'app/reduxHooks';
 import * as todosOperations from 'app/todos/operations';
 import { selectTodoError, selectTodoIsLoading } from 'app/todos/selectors';
-import { selectUserIsAuth } from 'app/user/selectors';
 import Button from 'components/Button/Button';
 import ErrorBoundary from 'components/ErrorBoundary';
 import Form from 'components/Form';
@@ -13,10 +12,9 @@ import { StatusFilter } from 'components/Todos/TodosFilter';
 import { useToggle } from 'hooks/useToggle';
 import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Navigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 const Todos = () => {
-  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams({ search: '' });
   const dispatch = useDispatch();
   // const todos = useAppSelector(selectTodos);
@@ -24,7 +22,6 @@ const Todos = () => {
   const todosLoading = useAppSelector(selectTodoIsLoading);
   const errorMessage = useAppSelector(selectTodoError);
 
-  const isLoggedIn = useAppSelector(selectUserIsAuth);
   const handleSearch = useCallback(
     ({ target: { value } }) =>
       setSearchParams(prev => {
@@ -40,14 +37,9 @@ const Todos = () => {
     dispatch(todosOperations.addTodo({ title, message }));
   };
 
-
   useEffect(() => {
     dispatch(todosOperations.fetchTodosThunk());
   }, [dispatch]);
-
-  if (!isLoggedIn) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
 
   return (
     <>

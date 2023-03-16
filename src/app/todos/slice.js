@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { statusFilters } from 'app/constants';
+import { userLogout } from 'app/user/slice';
 import { addTodo, deleteTodo, fetchTodosThunk, updateTodo } from './operations';
 
 const startLoading = state => {
@@ -12,17 +13,19 @@ const handleError = (state, { payload }) => {
   state.isLoading = false;
 };
 
-const todosSlice = createSlice({
-  initialState: {
-    /** @type {{id: string, createdAt: string, title: string, message: string, completed: boolean}[]} */
-    todos: [],
-    filters: {
-      status: statusFilters.all,
-    },
-    isLoading: false,
-    error: '',
-    processingTodoId: '',
+const initialState = {
+  /** @type {{id: string, createdAt: string, title: string, message: string, completed: boolean}[]} */
+  todos: [],
+  filters: {
+    status: statusFilters.all,
   },
+  isLoading: false,
+  error: '',
+  processingTodoId: '',
+};
+
+const todosSlice = createSlice({
+  initialState,
   name: 'todos',
   reducers: {
     changeStatusFilter(state, { payload }) {
@@ -70,7 +73,8 @@ const todosSlice = createSlice({
       .addCase(updateTodo.rejected, (state, { payload }) => {
         state.processingTodoId = '';
         state.error = payload.message;
-      });
+      })
+      .addCase(userLogout, () => initialState);
   },
 });
 
