@@ -1,6 +1,6 @@
 // @ts-check
 import { createSelector } from '@reduxjs/toolkit';
-import { statusFilters } from 'app/constants';
+import { statusFilters } from 'constants/todosConstants';
 
 /** @param {RootState} state */
 export const selectTodos = state => state.todos.todos;

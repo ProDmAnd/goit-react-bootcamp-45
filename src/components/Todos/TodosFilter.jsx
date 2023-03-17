@@ -1,11 +1,11 @@
 // Імпортуємо хук
-import Button from 'components/Button/Button';
 import { useDispatch } from 'react-redux';
 // Імпортуємо об'єкт значень фільтра
-import { statusFilters } from 'app/constants';
+import { Button } from '@mui/material';
 import { useAppSelector } from 'app/reduxHooks';
 import { selectTodosFilterStatus } from 'app/todos/selectors';
 import { todosActions } from 'app/todos/slice';
+import { statusFilters } from 'constants/todosConstants';
 
 export const StatusFilter = () => {
   const dispatch = useDispatch();
@@ -17,7 +17,7 @@ export const StatusFilter = () => {
         onClick={() =>
           dispatch(todosActions.changeStatusFilter(statusFilters.all))
         }
-        selected={filter === statusFilters.all}
+        variant={filter === statusFilters.all ? 'contained' : 'outlined'}
       >
         All
       </Button>
@@ -25,7 +25,7 @@ export const StatusFilter = () => {
         onClick={() =>
           dispatch(todosActions.changeStatusFilter(statusFilters.active))
         }
-        selected={filter === statusFilters.active}
+        variant={filter === statusFilters.active ? 'contained' : 'outlined'}
       >
         Active
       </Button>
@@ -33,7 +33,7 @@ export const StatusFilter = () => {
         onClick={() =>
           dispatch(todosActions.changeStatusFilter(statusFilters.completed))
         }
-        selected={filter === statusFilters.completed}
+        variant={filter === statusFilters.completed ? 'contained' : 'outlined'}
       >
         Completed
       </Button>

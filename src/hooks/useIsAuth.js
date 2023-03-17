@@ -8,7 +8,6 @@ const useIsAuth = () => {
 
   const login = userData => {
     dispatch(userSignIn(userData));
-    // dispatch(userActions.login(userData));
   };
   const logout = () => {
     dispatch(userSignOut());

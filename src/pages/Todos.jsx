@@ -1,8 +1,7 @@
-import { CircularProgress } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { useAppSelector } from 'app/reduxHooks';
 import * as todosOperations from 'app/todos/operations';
 import { selectTodoError, selectTodoIsLoading } from 'app/todos/selectors';
-import Button from 'components/Button/Button';
 import ErrorBoundary from 'components/ErrorBoundary';
 import Form from 'components/Form';
 import Modal from 'components/Modal';
@@ -17,8 +16,6 @@ import { useSearchParams } from 'react-router-dom';
 const Todos = () => {
   const [searchParams, setSearchParams] = useSearchParams({ search: '' });
   const dispatch = useDispatch();
-  // const todos = useAppSelector(selectTodos);
-  // const todoStatus = useAppSelector(selectTodosFilterStatus);
   const todosLoading = useAppSelector(selectTodoIsLoading);
   const errorMessage = useAppSelector(selectTodoError);
 

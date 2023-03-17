@@ -20,7 +20,6 @@ export class Form extends Component {
   /** @type {React.FormEventHandler<HTMLFormElement>} */
   submit = e => {
     e.preventDefault();
-    // this.props.onSubmit(this.state);
     this.props.addTodo(this.state);
     this.setState({ title: '', message: '' });
   };

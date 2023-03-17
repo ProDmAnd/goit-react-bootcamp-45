@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { statusFilters } from 'app/constants';
 import { userSignOut } from 'app/user/operations';
+import { statusFilters } from 'constants/todosConstants';
 import { addTodo, deleteTodo, fetchTodosThunk, updateTodo } from './operations';
 
 const startLoading = state => {

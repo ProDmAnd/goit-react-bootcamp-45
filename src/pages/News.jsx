@@ -1,6 +1,6 @@
+import { Button } from '@mui/material';
 import { fetchNewsByQuery } from 'app/news/operations';
 import { useAppSelector } from 'app/reduxHooks';
-import Button from 'components/Button/Button';
 import NewsList from 'components/News/NewsList';
 import useIsMount from 'hooks/useIsMount';
 import { useToggle } from 'hooks/useToggle';
