@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { statusFilters } from 'app/constants';
-import { userLogout } from 'app/user/slice';
+import { userSignOut } from 'app/user/operations';
 import { addTodo, deleteTodo, fetchTodosThunk, updateTodo } from './operations';
 
 const startLoading = state => {
@@ -74,7 +74,7 @@ const todosSlice = createSlice({
         state.processingTodoId = '';
         state.error = payload.message;
       })
-      .addCase(userLogout, () => initialState);
+      .addCase(userSignOut.fulfilled, () => initialState);
   },
 });
 

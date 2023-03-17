@@ -1,6 +1,5 @@
 import { useAppSelector } from 'app/reduxHooks';
-import { userSignIn, userSignUp } from 'app/user/operations';
-import { userLogout } from 'app/user/slice';
+import { userSignIn, userSignOut, userSignUp } from 'app/user/operations';
 import { useDispatch } from 'react-redux';
 
 const useIsAuth = () => {
@@ -12,12 +11,13 @@ const useIsAuth = () => {
     // dispatch(userActions.login(userData));
   };
   const logout = () => {
-    dispatch(userLogout());
+    dispatch(userSignOut());
   };
 
   const signUp = values => {
     dispatch(userSignUp(values));
   };
+
 
   return { isLoggedIn, login, logout, signUp };
 };

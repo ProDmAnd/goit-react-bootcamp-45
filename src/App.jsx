@@ -1,7 +1,8 @@
 import { useAppSelector } from 'app/reduxHooks';
+import { getCurrentUser } from 'app/user/operations';
 import PrivateRoute from 'components/PrivateRoute';
 import PublicRoute from 'components/PublicRoute';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
@@ -31,12 +32,9 @@ const App = () => {
   const dispatch = useDispatch();
   const isRefreshing = useAppSelector(state => state.user.isRefreshing);
 
-  // useEffect(() => {
-  //   dispatch(userActions.refreshUser());
-  //   setTimeout(() => {
-  //     dispatch(userActions.login({ email: 'User@mail.com' }));
-  //   }, 2000);
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getCurrentUser());
+  }, [dispatch]);
 
   return (
     <>

@@ -1,5 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { userSignIn, userSignUp } from './operations';
+import {
+  getCurrentUser,
+  userSignIn,
+  userSignOut,
+  userSignUp
+} from './operations';
 
 const initialState = {
   user: {
@@ -30,12 +35,7 @@ const userFullfiled = (state, { payload }) => {
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    userLogout() {
-      // Це важливо, щоб при обнуленні стану використовувався іммутабельний підхід. Інакше не працює!
-      return initialState;
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(userSignUp.pending, startLoading)
@@ -43,10 +43,19 @@ const userSlice = createSlice({
       .addCase(userSignUp.rejected, handleError)
       .addCase(userSignIn.pending, startLoading)
       .addCase(userSignIn.fulfilled, userFullfiled)
-      .addCase(userSignIn.rejected, handleError);
+      .addCase(userSignIn.rejected, handleError)
+      .addCase(getCurrentUser.pending, state => {
+        state.isRefreshing = true;
+      })
+      .addCase(getCurrentUser.fulfilled, (state, { payload }) => {
+        state.isRefreshing = false;
+        state.user = payload;
+      })
+      .addCase(getCurrentUser.rejected, state => {
+        state.isRefreshing = false;
+      })
+      .addCase(userSignOut.fulfilled, () => initialState)
   },
 });
 
 export const userReducer = userSlice.reducer;
-
-export const { userLogout } = userSlice.actions;
