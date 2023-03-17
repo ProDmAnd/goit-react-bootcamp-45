@@ -7,6 +7,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@firebase/app": "^0.9.4",
+    "@firebase/auth": "^0.21.5",
     "@firebase/database": "^0.14.4",
     "@fontsource/roboto": "^4.5.8",
     "@mui/icons-material": "^5.11.11",

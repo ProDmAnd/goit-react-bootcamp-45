@@ -2,7 +2,6 @@ import { Button } from '@mui/material';
 import { fetchNewsByQuery } from 'app/news/operations';
 import { useAppSelector } from 'app/reduxHooks';
 import NewsList from 'components/News/NewsList';
-import useIsMount from 'hooks/useIsMount';
 import { useToggle } from 'hooks/useToggle';
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch } from 'react-redux';
@@ -10,7 +9,6 @@ import { useSearchParams } from 'react-router-dom';
 
 const News = () => {
   const dispatch = useDispatch();
-  const isMount = useIsMount();
   const searchRef = useRef();
   /** @type {React.RefObject<HTMLButtonElement>} */
   const incrementButtonRef = useRef();

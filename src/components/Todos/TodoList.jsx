@@ -2,6 +2,7 @@ import { Button } from '@mui/material';
 import { useAppSelector } from 'app/reduxHooks';
 import * as todosOperations from 'app/todos/operations';
 import { selectVisibleTodosOptimized } from 'app/todos/selectors';
+import { updateTodo } from 'db';
 import React, { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -34,9 +35,10 @@ export default function TodoList() {
 
   const toggleTodo = (id, completed) => {
     return () => {
-      dispatch(
-        todosOperations.updateTodo({ todoId: id, update: { completed } })
-      );
+      updateTodo(id, { completed });
+      // dispatch(
+      //   todosOperations.updateTodo({ todoId: id, update: { completed } })
+      // );
     };
   };
 

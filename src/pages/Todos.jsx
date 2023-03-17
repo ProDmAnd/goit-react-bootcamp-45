@@ -1,6 +1,6 @@
 import { Button, CircularProgress } from '@mui/material';
 import { useAppSelector } from 'app/reduxHooks';
-import * as todosOperations from 'app/todos/operations';
+import { fetchTodosThunk } from 'app/todos/operations';
 import { selectTodoError, selectTodoIsLoading } from 'app/todos/selectors';
 import ErrorBoundary from 'components/ErrorBoundary';
 import Form from 'components/Form';
@@ -8,6 +8,7 @@ import Modal from 'components/Modal';
 import TodoList from 'components/Todos/TodoList';
 import { TodosCounter } from 'components/Todos/TodosCounter';
 import { StatusFilter } from 'components/Todos/TodosFilter';
+import { createTodo } from 'db';
 import { useToggle } from 'hooks/useToggle';
 import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -31,11 +32,12 @@ const Todos = () => {
   const addTodoModal = useToggle();
 
   const addTodo = ({ title, message }) => {
-    dispatch(todosOperations.addTodo({ title, message }));
+    // dispatch(todosOperations.addTodo({ title, message }));
+    createTodo({ title, message });
   };
 
   useEffect(() => {
-    dispatch(todosOperations.fetchTodosThunk());
+    dispatch(fetchTodosThunk());
   }, [dispatch]);
 
   return (

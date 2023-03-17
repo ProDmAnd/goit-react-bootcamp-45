@@ -14,7 +14,7 @@ const handleError = (state, { payload }) => {
 };
 
 const initialState = {
-  /** @type {{id: string, createdAt: string, title: string, message: string, completed: boolean}[]} */
+  /** @type {import('db/models/todos')['Todo'][]} */
   todos: [],
   filters: {
     status: statusFilters.all,
@@ -30,6 +30,17 @@ const todosSlice = createSlice({
   reducers: {
     changeStatusFilter(state, { payload }) {
       state.filters.status = payload;
+    },
+    setTodos(state, { payload }) {
+      state.todos = payload;
+    },
+    updateTodo(state, { payload }) {
+      state.todos = state.todos.map(todo =>
+        todo.id === payload.id ? payload : todo
+      );
+    },
+    addTodo(state, { payload }) {
+      state.todos.push(payload);
     },
   },
   extraReducers: builder => {

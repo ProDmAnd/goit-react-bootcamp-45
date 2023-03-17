@@ -2,6 +2,7 @@ import { useAppSelector } from 'app/reduxHooks';
 import { getCurrentUser } from 'app/user/operations';
 import PrivateRoute from 'components/PrivateRoute';
 import PublicRoute from 'components/PublicRoute';
+import { readDb } from 'db';
 import React, { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
@@ -34,6 +35,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(getCurrentUser());
+    readDb();
   }, [dispatch]);
 
   return (

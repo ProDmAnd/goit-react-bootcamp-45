@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { getAllTodos } from 'db';
 import { toast } from 'react-hot-toast';
 
 const todosInstance = axios.create({
@@ -14,9 +15,10 @@ export const fetchTodosThunk = createAsyncThunk(
   'fetchTodos',
   async (_, thunkApi) => {
     try {
-      const response = await todosInstance.get();
-      return response.data;
+      const response = await getAllTodos();
+      return response;
     } catch (error) {
+      console.error(error);
       return thunkApi.rejectWithValue({
         message: 'Нічого не знайдено',
       });
